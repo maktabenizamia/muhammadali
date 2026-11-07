@@ -43,12 +43,45 @@
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
 
+  /* آٹھ کونوں والا ستارہ (لوگو) */
+  function LOGO(draw) {
+    return '<svg class="logo" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#e0be72" stroke-width="2.2">' +
+      '<g class="spin"><rect class="' + (draw ? 'draw' : '') + '" x="22" y="22" width="56" height="56"/>' +
+      '<rect class="' + (draw ? 'draw' : '') + '" x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></g>' +
+      '<circle class="' + (draw ? 'draw' : '') + '" cx="50" cy="50" r="15"/><circle cx="50" cy="50" r="4" fill="#e0be72"/></svg>';
+  }
+
+  function buildDust() {
+    var d = document.createElement('div'); d.className = 'dust'; d.setAttribute('aria-hidden', 'true');
+    var h = '';
+    for (var i = 0; i < 18; i++) {
+      h += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;--s:' + (2 + Math.random() * 4).toFixed(1) + 'px;' +
+           '--d:' + (14 + Math.random() * 16).toFixed(1) + 's;--l:-' + (Math.random() * 20).toFixed(1) + 's;' +
+           '--x:' + (Math.random() * 120 - 60).toFixed(0) + 'px"></i>';
+    }
+    d.innerHTML = h;
+    body.insertBefore(d, body.firstChild);
+  }
+
+  function buildSplash() {
+    var seen = null;
+    try { seen = sessionStorage.getItem('mag-splash'); } catch (e) {}
+    if (seen || location.hash || PAGE_MODE) return;
+    try { sessionStorage.setItem('mag-splash', '1'); } catch (e) {}
+    var s = document.createElement('div'); s.id = 'splash';
+    s.innerHTML = LOGO(true) + '<h1>' + TITLE + '</h1><p>تحقیقی و تجزیاتی مطالعہ — ایم فل اسلامیات</p><small>شروع کرنے کے لیے کلک کریں</small>';
+    body.appendChild(s);
+    var close = function () { s.classList.add('hide'); setTimeout(function () { s.remove(); }, 1000); };
+    s.onclick = close; setTimeout(close, 3200);
+  }
+
   function buildChrome() {
+    buildDust();
     var bar = document.createElement('header');
     bar.className = 'bar';
     bar.innerHTML =
       '<button class="btn group" id="bThumbs" title="فہرستِ صفحات" aria-label="فہرستِ صفحات">' + ICON.menu + '<span class="lbl">صفحات</span></button>' +
-      '<a class="brand" href="index.html"><b>' + TITLE + '</b><small>' + SUB + '</small></a>' +
+      '<a class="brand" href="index.html">' + LOGO(false) + '<span class="t"><b>' + TITLE + '</b><small>' + SUB + '</small></span></a>' +
       '<div class="tools">' +
         '<div class="group view-grp">' +
           '<button class="btn" id="bV1" title="ایک صفحہ">ایک صفحہ</button>' +
@@ -74,6 +107,7 @@
     pager.className = 'pager';
     pager.setAttribute('aria-label', 'صفحات');
     pager.innerHTML =
+      '<div class="progress"><i id="pBar"></i></div>' +
       '<button class="btn" id="bPrev" aria-label="پچھلا صفحہ">' + ICON.right + '<span class="lbl">پچھلا</span></button>' +
       '<div class="num"><input id="pNum" type="number" min="1" max="' + TOTAL + '" inputmode="numeric" aria-label="صفحہ نمبر"><span id="pTot"></span></div>' +
       '<button class="btn" id="bNext" aria-label="اگلا صفحہ"><span class="lbl">اگلا</span>' + ICON.left + '</button>';
@@ -84,7 +118,7 @@
     th.setAttribute('aria-label', 'فہرستِ صفحات');
     var items = '';
     for (var i = 1; i <= TOTAL; i++) {
-      items += '<a data-p="' + i + '" href="' + (PAGE_MODE ? pageUrl(i) : '#' + i) + '">' +
+      items += '<a data-p="' + i + '" style="--i:' + (i - 1) + '" href="' + (PAGE_MODE ? pageUrl(i) : '#' + i) + '">' +
                '<img loading="lazy" alt="صفحہ ' + i + '" src="' + thumbSrc(i) + '"><span>صفحہ ' + i + '</span></a>';
     }
     th.innerHTML = '<header><b>فہرستِ صفحات</b><button class="btn" id="bClose" aria-label="بند کریں">' + ICON.close + '</button></header><div class="grid">' + items + '</div>';
@@ -93,7 +127,23 @@
   }
 
   buildChrome();
+  buildSplash();
   var $ = function (id) { return document.getElementById(id); };
+  var turnDir = '';                       // 'next' | 'prev' | ''
+
+  /* تصویر لوڈ ہونے پر خاکہ ہٹائیں */
+  function markLoaded(im) {
+    if (im.complete && im.naturalWidth) { im.classList.add('ld'); }
+    else { im.addEventListener('load', function () { im.classList.add('ld'); }); im.addEventListener('error', function () { im.classList.add('ld'); }); }
+  }
+  Array.prototype.forEach.call(book.querySelectorAll('img'), markLoaded);
+
+  /* بٹنوں پر لہر کا اثر */
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest && e.target.closest('.btn');
+    if (!b || b.disabled) return;
+    b.classList.remove('rip'); void b.offsetWidth; b.classList.add('rip');
+  });
 
   /* ---------- fit & zoom ---------- */
   function fit() {
@@ -103,7 +153,8 @@
     var h = base * state.zoom;
     book.style.setProperty('--h', h + 'px');
     book.style.setProperty('--w', (h * ASPECT) + 'px');
-    $('zVal').textContent = Math.round(state.zoom * 100) + '%';
+    var zv = $('zVal'), txt = Math.round(state.zoom * 100) + '%';
+    if (zv.textContent !== txt) { zv.textContent = txt; zv.classList.remove('pop'); void zv.offsetWidth; zv.classList.add('pop'); }
     stage.classList.toggle('zoomed', state.zoom > 1.02);
     $('bZin').disabled = state.zoom >= ZMAX - 0.001;
     $('bZout').disabled = state.zoom <= ZMIN + 0.001;
@@ -127,6 +178,7 @@
   function go(p) {
     p = clamp(p, 1, TOTAL);
     if (PAGE_MODE) { if (p !== state.page) location.href = pageUrl(p); return; }
+    turnDir = p > state.page ? 'next' : (p < state.page ? 'prev' : '');
     if (location.hash !== '#' + p + '&v=' + state.view) {
       location.hash = p + '&v=' + state.view;   // hashchange → render
     } else { render(); }
@@ -141,9 +193,12 @@
     pages.forEach(function (p) {
       var im = new Image();
       im.src = imgSrc(p); im.alt = 'صفحہ ' + p; im.draggable = false;
+      markLoaded(im);
       book.appendChild(im);
     });
     book.className = 'book' + (pages.length > 1 ? ' spread' : '');
+    if (turnDir) { book.setAttribute('data-turn', turnDir); } else { book.removeAttribute('data-turn'); }
+    turnDir = '';
     document.title = (pages.length > 1 ? 'صفحات ' + pages[0] + '–' + pages[1] : 'صفحہ ' + pages[0]) + ' — ' + TITLE;
     stage.scrollLeft = 0; stage.scrollTop = 0;
     fit(); updateUI(pages);
@@ -160,6 +215,7 @@
     $('bV1').classList.toggle('on', state.view === 1);
     $('bV2').classList.toggle('on', state.view === 2);
     var first = shown[0], last = shown[shown.length - 1];
+    $('pBar').style.width = (last / TOTAL * 100) + '%';
     $('bPrev').disabled = first <= 1;
     $('bNext').disabled = last >= TOTAL;
     var links = document.querySelectorAll('#thumbs a');

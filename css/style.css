@@ -1,130 +1,269 @@
 :root{
-  --bg:#171c19;
-  --bar:#0d3b25;
-  --bar-2:#115235;
-  --ink:#f3efe3;
-  --muted:#b9c4bb;
-  --gold:#d9b86c;
+  --bg:#0f1512;
+  --bar:#0b3322;
+  --bar-2:#14573a;
+  --ink:#f6f1e3;
+  --muted:#b9c7bd;
+  --gold:#e0be72;
+  --gold-2:#f4dc9b;
   --line:rgba(255,255,255,.12);
-  --radius:10px;
+  --radius:12px;
+  --ease:cubic-bezier(.22,.8,.24,1);
   --ui:"Noto Naskh Arabic","Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
   --title:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq","Noto Naskh Arabic",serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0}
+@view-transition{navigation:auto}
+
 body{
-  display:flex;flex-direction:column;height:100vh;height:100dvh;
-  background:radial-gradient(circle at 50% 30%,#232b26,var(--bg) 70%);
+  position:relative;display:flex;flex-direction:column;height:100vh;height:100dvh;
+  background:linear-gradient(135deg,#0c120f,#10241a 45%,#0c120f);
+  background-size:300% 300%;animation:bgShift 28s ease-in-out infinite;
   color:var(--ink);font-family:var(--ui);overflow:hidden;
 }
+/* آہستہ سرکتا اسلامی جیومیٹرک نقش */
+body::before{
+  content:"";position:fixed;inset:-80px;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23e0be72' stroke-opacity='.10' stroke-width='1'%3E%3Crect x='20' y='20' width='40' height='40'/%3E%3Crect x='20' y='20' width='40' height='40' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='9'/%3E%3C/g%3E%3C/svg%3E");
+  animation:drift 50s linear infinite;
+}
+/* سنہری روشنی کی دھڑکن */
+body::after{
+  content:"";position:fixed;left:50%;top:48%;width:80vmin;height:80vmin;z-index:0;pointer-events:none;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(224,190,114,.16),rgba(224,190,114,0) 65%);
+  animation:glow 7s ease-in-out infinite;
+}
+@keyframes bgShift{0%,100%{background-position:0 0}50%{background-position:100% 100%}}
+@keyframes drift{to{transform:translate(80px,80px)}}
+@keyframes glow{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.92)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
+
 a{color:inherit;text-decoration:none}
 button,input{font-family:inherit;color:inherit}
 
+/* تیرتے سنہری ذرات */
+.dust{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.dust i{
+  position:absolute;bottom:-12px;width:var(--s);height:var(--s);border-radius:50%;
+  background:var(--gold-2);opacity:0;filter:blur(.5px);
+  animation:rise var(--d) linear var(--l) infinite;
+}
+@keyframes rise{
+  0%{transform:translate(0,0);opacity:0}
+  12%{opacity:.7}
+  100%{transform:translate(var(--x),-105vh);opacity:0}
+}
+
 /* ---------- top bar ---------- */
 .bar{
-  display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;
-  padding:8px 14px;background:linear-gradient(180deg,var(--bar-2),var(--bar));
-  border-bottom:1px solid var(--line);flex:0 0 auto;z-index:5;
+  position:relative;z-index:5;flex:0 0 auto;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 16px;
+  background:linear-gradient(180deg,rgba(20,87,58,.96),rgba(11,51,34,.96));
+  backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.4);
+  animation:slideDown .7s var(--ease) both;
 }
-.brand{display:flex;flex-direction:column;line-height:1.5;min-width:0;flex:1 1 260px}
-.brand b{font-family:var(--title);font-size:1.05rem;font-weight:600;color:var(--gold);
+.bar::after{ /* سنہری لکیر کی چمک */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),var(--gold-2),var(--gold),transparent);
+  background-size:200% 100%;animation:shine 5s linear infinite;
+}
+@keyframes shine{to{background-position:-200% 0}}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}
+
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 280px}
+.logo{width:42px;height:42px;flex:0 0 auto;filter:drop-shadow(0 0 8px rgba(224,190,114,.45))}
+.logo .spin{transform-origin:50% 50%;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand .t{display:flex;flex-direction:column;line-height:1.6;min-width:0}
+.brand b{font-family:var(--title);font-size:1.08rem;font-weight:600;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--gold));background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand small{color:var(--muted);font-size:.78rem}
+
 .tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.group{display:flex;align-items:center;background:rgba(0,0,0,.25);border:1px solid var(--line);
-  border-radius:var(--radius);overflow:hidden}
+.group{display:flex;align-items:center;background:rgba(0,0,0,.28);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.group:hover{border-color:rgba(224,190,114,.5);box-shadow:0 0 14px rgba(224,190,114,.15)}
 .btn{
-  appearance:none;border:0;background:transparent;cursor:pointer;
-  min-width:38px;height:38px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  font-size:.88rem;transition:background .15s;
+  appearance:none;border:0;background:transparent;cursor:pointer;position:relative;overflow:hidden;
+  min-width:38px;height:38px;padding:0 11px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-size:.88rem;transition:background .2s,transform .2s var(--ease),color .2s;
 }
-.btn:hover{background:rgba(255,255,255,.1)}
-.btn:disabled{opacity:.35;cursor:default}
-.btn.on{background:var(--gold);color:#1b2a20;font-weight:700}
-.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.zoom-val{min-width:52px;text-align:center;font-size:.85rem;direction:ltr;font-variant-numeric:tabular-nums}
+.btn:hover{background:rgba(255,255,255,.12)}
+.btn:active{transform:scale(.92)}
+.btn:disabled{opacity:.3;cursor:default;transform:none}
+.btn.on{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1b2a20;font-weight:700}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s var(--ease)}
+.btn:hover:not(:disabled) svg{transform:scale(1.18)}
+.btn::after{ /* لہر کا اثر */
+  content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.4) 0,transparent 60%);
+  transform:scale(0);opacity:0;border-radius:50%;
+}
+.btn.rip::after{animation:ripple .55s ease-out}
+@keyframes ripple{from{transform:scale(0);opacity:1}to{transform:scale(2.6);opacity:0}}
+.zoom-val{min-width:54px;text-align:center;font-size:.85rem;direction:ltr;font-variant-numeric:tabular-nums;color:var(--gold-2)}
+.zoom-val.pop{animation:pop .3s var(--ease)}
+@keyframes pop{50%{transform:scale(1.25)}}
 .sep{width:1px;align-self:stretch;background:var(--line)}
 
 /* ---------- stage ---------- */
 #stage{
+  position:relative;z-index:1;
   flex:1 1 auto;min-height:0;display:flex;overflow:auto;direction:ltr;
-  scrollbar-color:#4b5b50 transparent;overscroll-behavior:contain;
+  scrollbar-color:#4b5b50 transparent;overscroll-behavior:contain;perspective:2400px;
 }
 #stage.zoomed{cursor:grab}
 #stage.dragging{cursor:grabbing;user-select:none}
-#book{
-  direction:rtl;margin:auto;flex:0 0 auto;display:flex;padding:16px;
-}
+#book{direction:rtl;margin:auto;flex:0 0 auto;display:flex;padding:18px;transform-style:preserve-3d}
 #book img{
   display:block;height:var(--h,70vh);width:var(--w,50vh);background:#fff;
-  user-select:none;-webkit-user-drag:none;
-  box-shadow:0 10px 30px rgba(0,0,0,.55);
+  user-select:none;-webkit-user-drag:none;border-radius:2px;
+  box-shadow:0 18px 40px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05);
+  transition:width .3s var(--ease),height .3s var(--ease),filter .4s;
+  animation:appear .8s var(--ease) both;
 }
+/* تصویر لوڈ ہونے تک چمکتا خاکہ */
+#book img:not(.ld){
+  background:linear-gradient(100deg,#e8e4d6 30%,#faf7ee 50%,#e8e4d6 70%);background-size:200% 100%;
+  animation:appear .8s var(--ease) both,skel 1.2s linear infinite;
+  filter:blur(2px);
+}
+@keyframes skel{to{background-position:-200% 0}}
+@keyframes appear{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+
 #book.spread img{box-shadow:none}
-#book.spread{filter:drop-shadow(0 12px 22px rgba(0,0,0,.55))}
-/* page-gutter shading in two-page mode */
-#book.spread img:first-child{background-image:linear-gradient(270deg,rgba(0,0,0,.0),rgba(0,0,0,0))}
-#book.spread img + img{border-right:1px solid rgba(0,0,0,.25)}
+#book.spread{filter:drop-shadow(0 18px 28px rgba(0,0,0,.6))}
+#book.spread img:first-child{border-radius:2px 0 0 2px;transform-origin:left center}
+#book.spread img + img{border-radius:0 2px 2px 0;transform-origin:right center}
+/* جوڑ (spine) کی سایہ دار پٹی */
+#book.spread::before{
+  content:"";position:absolute;top:18px;bottom:18px;left:50%;width:40px;transform:translateX(-50%);z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.28) 48%,rgba(0,0,0,.34) 50%,rgba(0,0,0,.28) 52%,transparent);
+}
+#book{position:relative}
+
+/* ---------- صفحہ پلٹنے کے اثرات ---------- */
+#book[data-turn="next"] img{animation:turnNext .75s var(--ease) both}
+#book[data-turn="prev"] img{animation:turnPrev .75s var(--ease) both}
+#book[data-turn="next"].spread img:last-child{animation:flipFromSpineL .9s var(--ease) both}
+#book[data-turn="prev"].spread img:first-child{animation:flipFromSpineR .9s var(--ease) both}
+@keyframes turnNext{from{opacity:0;transform:translateX(-70px) rotateY(18deg)}to{opacity:1;transform:none}}
+@keyframes turnPrev{from{opacity:0;transform:translateX(70px) rotateY(-18deg)}to{opacity:1;transform:none}}
+@keyframes flipFromSpineL{
+  0%{opacity:0;transform:perspective(1800px) rotateY(-80deg)}
+  35%{opacity:1}
+  100%{opacity:1;transform:perspective(1800px) rotateY(0)}
+}
+@keyframes flipFromSpineR{
+  0%{opacity:0;transform:perspective(1800px) rotateY(80deg)}
+  35%{opacity:1}
+  100%{opacity:1;transform:perspective(1800px) rotateY(0)}
+}
 
 /* ---------- pager ---------- */
 .pager{
-  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:8px 12px;background:rgba(0,0,0,.35);border-top:1px solid var(--line);
+  position:relative;z-index:5;flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:10px 12px;background:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,.35));backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);animation:slideUp .7s var(--ease) .1s both;
 }
-.pager .btn{background:rgba(255,255,255,.07);border-radius:var(--radius);padding:0 16px}
-.pager .btn:hover{background:rgba(255,255,255,.16)}
-.pager .num{display:flex;align-items:center;gap:6px;direction:ltr;font-size:.95rem}
+.pager .btn{background:rgba(255,255,255,.08);border-radius:var(--radius);padding:0 18px;border:1px solid var(--line)}
+.pager .btn:hover:not(:disabled){background:rgba(224,190,114,.2);border-color:var(--gold)}
+#bNext:hover:not(:disabled) svg{transform:translateX(-5px) scale(1.15)}
+#bPrev:hover:not(:disabled) svg{transform:translateX(5px) scale(1.15)}
+.pager .num{display:flex;align-items:center;gap:6px;direction:ltr;font-size:.95rem;min-width:130px;justify-content:center}
 .pager input{
-  width:56px;height:36px;text-align:center;border:1px solid var(--line);border-radius:8px;
-  background:rgba(0,0,0,.3);font-size:1rem;
+  width:58px;height:38px;text-align:center;border:1px solid var(--line);border-radius:10px;
+  background:rgba(0,0,0,.35);font-size:1rem;transition:border-color .2s,box-shadow .2s;
 }
-.pager input:focus{outline:2px solid var(--gold)}
+.pager input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,190,114,.25)}
+.progress{position:absolute;top:-3px;left:0;right:0;height:3px;background:rgba(255,255,255,.08);direction:rtl}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(270deg,var(--gold),var(--gold-2));
+  box-shadow:0 0 10px var(--gold);transition:width .6s var(--ease)}
 
 /* ---------- thumbnails drawer ---------- */
-#scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:20}
 #scrim.show{opacity:1;pointer-events:auto}
 #thumbs{
-  position:fixed;top:0;bottom:0;right:0;width:min(360px,88vw);z-index:21;
-  background:#101512;border-left:1px solid var(--line);
-  transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;
+  position:fixed;top:0;bottom:0;right:0;width:min(380px,90vw);z-index:21;
+  background:linear-gradient(180deg,#0f1f17,#0a110e);border-left:1px solid rgba(224,190,114,.35);
+  transform:translateX(105%);transition:transform .45s var(--ease);display:flex;flex-direction:column;
+  box-shadow:-20px 0 50px rgba(0,0,0,.5);
 }
 #thumbs.show{transform:none}
-#thumbs header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--gold)}
-#thumbs .grid{overflow:auto;padding:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;align-content:start}
-#thumbs a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border-radius:8px;border:2px solid transparent;font-size:.8rem;color:var(--muted)}
-#thumbs a:hover{background:rgba(255,255,255,.06)}
-#thumbs a.active{border-color:var(--gold);color:var(--ink)}
-#thumbs img{width:100%;height:auto;background:#fff;border-radius:3px;display:block}
+#thumbs header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--gold)}
+#thumbs .grid{overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-content:start}
+#thumbs a{
+  display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px;border-radius:10px;
+  border:2px solid transparent;font-size:.8rem;color:var(--muted);
+  opacity:0;transform:translateY(18px);transition:background .2s,transform .25s var(--ease),border-color .2s;
+}
+#thumbs.show a{animation:thumbIn .5s var(--ease) calc(var(--i)*45ms + 150ms) both}
+@keyframes thumbIn{to{opacity:1;transform:none}}
+#thumbs a:hover{background:rgba(224,190,114,.1);transform:translateY(-4px) scale(1.03)!important}
+#thumbs a.active{border-color:var(--gold);color:var(--ink);box-shadow:0 0 16px rgba(224,190,114,.35)}
+#thumbs img{width:100%;height:auto;background:#fff;border-radius:3px;display:block;box-shadow:0 4px 10px rgba(0,0,0,.5)}
 
 /* ---------- toast ---------- */
 #toast{
-  position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--gold);color:#1b2a20;padding:8px 18px;border-radius:99px;font-size:.9rem;
-  opacity:0;pointer-events:none;transition:.25s;z-index:30
+  position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px) scale(.9);
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1b2a20;padding:9px 20px;border-radius:99px;
+  font-size:.9rem;font-weight:700;opacity:0;pointer-events:none;transition:.35s var(--ease);z-index:40;
+  box-shadow:0 8px 24px rgba(0,0,0,.4)
 }
-#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 
-noscript .ns{padding:12px;text-align:center}
+/* ---------- افتتاحی اسکرین ---------- */
+#splash{
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:radial-gradient(circle at 50% 40%,#14573a,#07150f 75%);text-align:center;padding:24px;cursor:pointer;
+  transition:opacity .9s ease,transform .9s var(--ease),visibility .9s;
+}
+#splash.hide{opacity:0;transform:scale(1.08);visibility:hidden;pointer-events:none}
+#splash svg{width:120px;height:120px;filter:drop-shadow(0 0 22px rgba(224,190,114,.6))}
+#splash .spin{transform-origin:50% 50%;animation:spin 14s linear infinite}
+#splash .draw{stroke-dasharray:400;stroke-dashoffset:400;animation:draw 2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+#splash h1{
+  margin:8px 0 0;font-family:var(--title);font-weight:600;font-size:clamp(1.3rem,4.2vw,2.3rem);line-height:2;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--gold));background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:fadeUp 1s var(--ease) .3s both,shine 4s linear infinite;
+}
+#splash p{margin:0;color:var(--muted);animation:fadeUp 1s var(--ease) .6s both}
+#splash small{margin-top:18px;color:var(--gold);opacity:.8;animation:fadeUp 1s var(--ease) 1s both,blink 1.6s ease-in-out 2s infinite}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:.25}}
+
+noscript .ns{padding:12px;text-align:center;position:relative;z-index:2}
 noscript .ns a{color:var(--gold);margin:0 10px}
 
 /* ---------- small screens ---------- */
 @media (max-width:700px){
   .bar{padding:6px 10px;gap:6px}
   .brand{flex-basis:100%}
+  .logo{width:34px;height:34px}
   .brand b{font-size:.95rem}
   .tools{width:100%;justify-content:space-between;gap:6px}
   .btn{min-width:36px;height:36px;padding:0 8px}
   .btn .lbl{display:none}
   .view-grp .btn .lbl{display:inline}
   #book{padding:10px}
+  .pager .num{min-width:110px}
 }
 @media (max-width:420px){
   .view-grp .btn .lbl{display:none}
   .zoom-val{min-width:44px;font-size:.78rem}
 }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .dust{display:none}
+}
 @media print{
-  .bar,.pager,#thumbs,#scrim{display:none!important}
-  body{display:block;background:#fff;overflow:visible;height:auto}
+  .bar,.pager,#thumbs,#scrim,.dust,#splash{display:none!important}
+  body{display:block;background:#fff;overflow:visible;height:auto;animation:none}
+  body::before,body::after{display:none}
   #stage{overflow:visible}
-  #book img{box-shadow:none;height:auto;width:100%}
+  #book img{box-shadow:none;height:auto;width:100%;animation:none}
 }
