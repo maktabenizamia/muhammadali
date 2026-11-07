@@ -69,10 +69,12 @@
     if (seen || location.hash || PAGE_MODE) return;
     try { sessionStorage.setItem('mag-splash', '1'); } catch (e) {}
     var s = document.createElement('div'); s.id = 'splash';
-    s.innerHTML = LOGO(true) + '<h1>' + TITLE + '</h1><p>تحقیقی و تجزیاتی مطالعہ — ایم فل اسلامیات</p><small>شروع کرنے کے لیے کلک کریں</small>';
+    s.innerHTML = LOGO(true) + '<h1>' + TITLE + '</h1><p>تحقیقی و تجزیاتی مطالعہ — ایم فل اسلامیات</p><button type="button" class="enter" id="bEnter"><span>مزید پڑھیں</span>' + ICON.left + '</button>';
     body.appendChild(s);
     var close = function () { s.classList.add('hide'); setTimeout(function () { s.remove(); }, 1000); };
-    s.onclick = close; setTimeout(close, 3200);
+    var btn = s.querySelector('#bEnter');
+    btn.onclick = close;
+    setTimeout(function () { btn.focus({ preventScroll: true }); }, 1600);
   }
 
   function buildChrome() {
