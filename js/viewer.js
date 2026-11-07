@@ -43,12 +43,11 @@
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
 
-  /* آٹھ کونوں والا ستارہ (لوگو) */
-  function LOGO(draw) {
-    return '<svg class="logo" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#e0be72" stroke-width="2.2">' +
-      '<g class="spin"><rect class="' + (draw ? 'draw' : '') + '" x="22" y="22" width="56" height="56"/>' +
-      '<rect class="' + (draw ? 'draw' : '') + '" x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></g>' +
-      '<circle class="' + (draw ? 'draw' : '') + '" cx="50" cy="50" r="15"/><circle cx="50" cy="50" r="4" fill="#e0be72"/></svg>';
+  /* کھلی کتاب جس کے ورق باری باری پلٹتے ہیں */
+  function BOOK(big) {
+    var pages = '';
+    for (var i = 0; i < 7; i++) { pages += '<i class="pg" style="--i:' + i + '"></i>'; }
+    return '<span class="bkw' + (big ? ' big' : '') + '" aria-hidden="true"><span class="bk"><i class="cover"></i>' + pages + '<i class="spine"></i></span></span>';
   }
 
   function buildDust() {
@@ -69,8 +68,10 @@
     if (seen || location.hash || PAGE_MODE) return;
     try { sessionStorage.setItem('mag-splash', '1'); } catch (e) {}
     var s = document.createElement('div'); s.id = 'splash';
-    s.innerHTML = LOGO(true) + '<h1>' + TITLE + '</h1><p>تحقیقی و تجزیاتی مطالعہ — ایم فل اسلامیات</p><button type="button" class="enter" id="bEnter"><span>مزید پڑھیں</span>' + ICON.left + '</button>';
+    s.innerHTML = BOOK(true) + '<h1>' + TITLE + '</h1><p>تحقیقی و تجزیاتی مطالعہ — ایم فل اسلامیات</p>' +
+      '<button type="button" class="enter" id="bEnter"><span>مزید پڑھیں</span>' + ICON.left + '</button>';
     body.appendChild(s);
+
     var close = function () { s.classList.add('hide'); setTimeout(function () { s.remove(); }, 1000); };
     var btn = s.querySelector('#bEnter');
     btn.onclick = close;
@@ -83,7 +84,7 @@
     bar.className = 'bar';
     bar.innerHTML =
       '<button class="btn group" id="bThumbs" title="فہرستِ صفحات" aria-label="فہرستِ صفحات">' + ICON.menu + '<span class="lbl">صفحات</span></button>' +
-      '<a class="brand" href="index.html">' + LOGO(false) + '<span class="t"><b>' + TITLE + '</b><small>' + SUB + '</small></span></a>' +
+      '<a class="brand" href="index.html">' + BOOK(false) + '<span class="t"><b>' + TITLE + '</b><small>' + SUB + '</small></span></a>' +
       '<div class="tools">' +
         '<div class="group view-grp">' +
           '<button class="btn" id="bV1" title="ایک صفحہ">ایک صفحہ</button>' +

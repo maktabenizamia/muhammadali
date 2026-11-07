@@ -1,3 +1,10 @@
+@font-face{
+  font-family:"Bombay Black Unicode";font-display:swap;
+  src:local("Bombay Black Unicode"),local("BombayBlackUnicode"),local("Bombay Black"),
+      url("../fonts/BombayBlackUnicode.ttf") format("truetype"),
+      url("../fonts/Bombay-Black-Unicode.ttf") format("truetype"),
+      url("../fonts/BombayBlack.ttf") format("truetype");
+}
 :root{
   --bg:#0f1512;
   --bar:#0b3322;
@@ -10,6 +17,8 @@
   --radius:12px;
   --ease:cubic-bezier(.22,.8,.24,1);
   --ui:"Noto Naskh Arabic","Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
+  --lalezar:"Lalezar","Noto Naskh Arabic","Segoe UI",Tahoma,sans-serif;
+  --bombay:"Bombay Black Unicode","Noto Nastaliq Urdu","Noto Naskh Arabic",serif;
   --title:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq","Noto Naskh Arabic",serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -217,8 +226,8 @@ button,input{font-family:inherit;color:inherit}
 
 /* ---------- افتتاحی اسکرین ---------- */
 #splash{
-  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  background:radial-gradient(circle at 50% 40%,#14573a,#07150f 75%);text-align:center;padding:24px;
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:auto;
+  background:radial-gradient(circle at 50% 40%,#14573a,#07150f 75%);text-align:center;padding:20px;
   transition:opacity .9s ease,transform .9s var(--ease),visibility .9s;
 }
 #splash.hide{opacity:0;transform:scale(1.08);visibility:hidden;pointer-events:none}
@@ -227,14 +236,14 @@ button,input{font-family:inherit;color:inherit}
 #splash .draw{stroke-dasharray:400;stroke-dashoffset:400;animation:draw 2s ease forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 #splash h1{
-  margin:8px 0 0;font-family:var(--title);font-weight:600;font-size:clamp(1.3rem,4.2vw,2.3rem);line-height:2;
+  margin:14px 0 0;font-family:var(--bombay);font-weight:400;font-size:clamp(1.4rem,4vw,2.5rem);line-height:2;
   background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--gold));background-size:200% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;animation:fadeUp 1s var(--ease) .3s both,shine 4s linear infinite;
 }
-#splash p{margin:0;color:var(--muted);animation:fadeUp 1s var(--ease) .6s both}
+#splash p{margin:0;font-family:var(--lalezar);font-size:clamp(.95rem,2.2vw,1.2rem);color:var(--muted);animation:fadeUp 1s var(--ease) .6s both}
 #splash .enter{
-  margin-top:26px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;
-  padding:14px 38px;border-radius:99px;border:2px solid var(--gold);font-size:1.15rem;font-weight:700;
+  margin-top:16px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;flex:0 0 auto;
+  padding:10px 38px;border-radius:99px;border:2px solid var(--gold);font-family:var(--lalezar);font-size:1.3rem;font-weight:400;
   color:#1b2a20;background:linear-gradient(135deg,var(--gold),var(--gold-2),var(--gold));background-size:200% 100%;
   box-shadow:0 0 0 0 rgba(224,190,114,.6),0 10px 30px rgba(0,0,0,.45);
   animation:fadeUp 1s var(--ease) 1s both,pulse 2.2s ease-out 2s infinite,shine 4s linear infinite;
@@ -280,3 +289,40 @@ noscript .ns a{color:var(--gold);margin:0 10px}
   #stage{overflow:visible}
   #book img{box-shadow:none;height:auto;width:100%;animation:none}
 }
+
+#splash>*{flex:0 0 auto}
+@media (max-height:560px){#splash p{display:none}}
+
+/* ---------- کتابی اینیمیشن ---------- */
+.bkw{
+  --w:20px;--h:28px;display:grid;place-items:center;flex:0 0 auto;
+  width:calc(var(--w)*2 + 16px);height:calc(var(--h) + 16px);perspective:600px;
+  filter:drop-shadow(0 0 8px rgba(224,190,114,.45));
+}
+.bkw.big{--w:96px;--h:132px;perspective:1100px;margin-bottom:10px;filter:drop-shadow(0 0 26px rgba(224,190,114,.55))}
+.bk{position:relative;width:calc(var(--w)*2);height:var(--h);transform-style:preserve-3d;transform:rotateX(24deg);animation:bob 4.8s ease-in-out infinite}
+.bkw:not(.big) .bk{transform:rotateX(18deg)}
+@keyframes bob{50%{transform:rotateX(24deg) translateY(-6px)}}
+.bk .cover{
+  position:absolute;inset:-5px;border-radius:7px;transform:translateZ(-5px);
+  background:linear-gradient(135deg,#1a6b47,#0b3322);border:2px solid var(--gold);
+  box-shadow:0 14px 28px rgba(0,0,0,.5),inset 0 0 0 3px rgba(224,190,114,.25);
+}
+.bk .spine{position:absolute;top:-5px;bottom:-5px;left:50%;width:3px;margin-left:-1.5px;background:linear-gradient(var(--gold),#a8842f);transform:translateZ(-4px)}
+.bk .pg{
+  position:absolute;top:0;left:50%;width:var(--w);height:var(--h);transform-origin:left center;
+  border-radius:0 3px 3px 0;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 9%,rgba(11,51,34,.22) 9% 10%) 14% 18%/72% 66% no-repeat,
+    linear-gradient(90deg,#d9d2bd,#fbf8ef 25%,#f3eedd);
+  box-shadow:0 0 2px rgba(0,0,0,.3);
+  animation:pgflip 6.4s ease-in-out infinite;animation-delay:calc(var(--i)*.28s);
+}
+@keyframes pgflip{
+  0%,6%{transform:translateZ(calc(var(--i)*.7px)) rotateY(0)}
+  34%,58%{transform:translateZ(calc(var(--i)*.7px)) rotateY(-178deg)}
+  86%,100%{transform:translateZ(calc(var(--i)*.7px)) rotateY(0)}
+}
+.brand .bkw{margin-inline-end:2px}
+@media (max-width:700px){.bkw:not(.big){--w:16px;--h:24px}.bkw.big{--w:78px;--h:108px}}
+@media (max-height:640px){.bkw.big{--w:64px;--h:90px}}
